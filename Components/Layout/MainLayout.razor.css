@@ -1,0 +1,108 @@
+.navbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #343a40;
+    padding: 1rem;
+    gap: 10px;
+}
+
+.game-text {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin-right: 15px;
+    cursor: pointer;
+    font-family: Tahoma;
+    text-decoration: none;
+}
+
+.game {
+    background: linear-gradient(to right, #8A2BE2, #9932CC, #9400D3);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.game-navigation {
+    text-decoration: none;
+}
+
+.saldo {
+    font-weight: bold;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.icon-profile {
+    width: 50px;
+    height: 50px;
+    color: white;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.icon-cart {
+    width: 40px;
+    height: 40px;
+    color: white;
+    cursor: pointer;
+}
+
+.icon-search {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    background: white;
+    overflow: hidden;
+    border: 2px solid #343a40;
+    margin-right: 20px;
+}
+
+    .search-container:focus-within {
+        border: 2px solid #9430d5;
+    }
+
+#categorySelect {
+    border: none;
+    clip-path: inset(0 0 0 0);
+    outline: none;
+    background-color: transparent;
+    appearance: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    width: 200px;
+    display: block;
+}
+
+    #categorySelect:focus {
+        box-shadow: none !important;
+    }
+
+.search-bar {
+    border: none;
+    border-right: 1px solid #ccc;
+    padding: 8px 15px;
+    font-size: 1rem;
+    outline: none;
+    width: 300px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.search-button {
+    background: #9503d3;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    transition: background 0.3s;
+    border: none;
+}
+
