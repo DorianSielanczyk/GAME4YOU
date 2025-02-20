@@ -14,7 +14,7 @@ namespace GAME4YOU.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpGet("products")]
+        [HttpGet]
         public ActionResult<IEnumerable<Product>> GetAll()
         {
             var products = _dbContext.Products.ToList();

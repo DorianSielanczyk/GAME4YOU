@@ -1,0 +1,110 @@
+﻿.modal-content {
+    width: 900px;
+    height: auto;
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050;
+    border-radius: 12px;
+    overflow: hidden;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+ 
+.product-modal {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.product-modal-image {
+    flex: none;
+    width: 350px;
+    height: 350px;
+}
+
+    .product-modal-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+.product-modal-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+    .product-modal-details h3 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+
+    }
+
+    .product-modal-details p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+.product-category {
+    color: #444;
+}
+
+.product-seller {
+    color: #444;
+}
+
+.product-price {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 10px;
+    margin-top: 15px;
+    padding-bottom: 0px;
+}
+
+    .modal-footer button {
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}

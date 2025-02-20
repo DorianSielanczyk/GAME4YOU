@@ -1,7 +1,8 @@
 using GAME4YOU.Components;
 using GAME4YOU.Data;
+using GAME4YOU.Services;
 using Microsoft.EntityFrameworkCore;
-using Syncfusion.Blazor;
+using BlazorBootstrap;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,19 +20,22 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<Game4youSeeder>();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSyncfusionBlazor();
 builder.Services.AddHttpClient();
+builder.Services.AddBlazorBootstrap();
+builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<ProductService>();
 
 var app = builder.Build();
 
 
-// Creating DataBase during start
+// Creating DataBase during start required:DbContext and Seeder
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<Game4youDbContext>();
-    dbContext.Database.Migrate(); // Zastosowanie migracji bazy danych
+    dbContext.Database.Migrate(); // Using migrations (we have to have them)
 
-    var seeder = scope.ServiceProvider.GetRequiredService<Game4youSeeder>();
+    //Completing the database by seeder
+        var seeder = scope.ServiceProvider.GetRequiredService<Game4youSeeder>();
     seeder.Seed();
 }
 
@@ -49,7 +53,6 @@ app.UseSwagger();
 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "GAME4YOU"); });
 app.UseStaticFiles();
 app.UseAntiforgery();
-
 app.MapControllers();
 
 app.MapRazorComponents<App>()

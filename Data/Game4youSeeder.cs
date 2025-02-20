@@ -17,7 +17,6 @@ namespace GAME4YOU.Data
         {
             if (_dbContext.Database.CanConnect())
             {
-                // Upewnij się, że role istnieją w tabeli 'Roles'
                 if (!_dbContext.Roles.Any())
                 {
                     var roles = GetRoles();
@@ -25,7 +24,6 @@ namespace GAME4YOU.Data
                     _dbContext.SaveChanges();
                 }
 
-                // Upewnij się, że kategorie istnieją w tabeli 'Categories'
                 if (!_dbContext.Categories.Any())
                 {
                     var categories = GetCategories();
@@ -33,7 +31,6 @@ namespace GAME4YOU.Data
                     _dbContext.SaveChanges();
                 }
 
-                // Upewnij się, że użytkownicy są w bazie
                 if (!_dbContext.Users.Any())
                 {
                     var users = GetUsers();
@@ -41,7 +38,6 @@ namespace GAME4YOU.Data
                     _dbContext.SaveChanges();
                 }
 
-                // Teraz, gdy użytkownicy, role i kategorie są w bazie, możesz dodać produkty
                 if (!_dbContext.Products.Any())
                 {
                     var products = GetProducts();
@@ -82,72 +78,200 @@ namespace GAME4YOU.Data
                     Email = "JanKowalski@game4you.com",
                     FirstName = "Jan",
                     LastName = "Kowalski",
-                    PasswordHash = "hashed_password1", // Upewnij się, że masz właściwy sposób hashowania haseł
-                    RoleId = 2 // User
+                    PasswordHash = "hashed_password1",
+                    RoleId = 2 
                 },
                 new Users
                 {
                     Email = "AnnaNowak@game4you.com",
                     FirstName = "Anna",
                     LastName = "Nowak",
-                    PasswordHash = "hashed_password2", // Hasło hashowane
-                    RoleId = 2 // User
+                    PasswordHash = "hashed_password2", 
+                    RoleId = 2 
                 }
             };
         }
 
         private IEnumerable<Product> GetProducts()
         {
-            var users = _dbContext.Users.ToList(); // Pobieramy użytkowników z bazy danych
-            var categories = _dbContext.Categories.ToList(); // Pobieramy kategorie z bazy danych
+            var users = _dbContext.Users.ToList(); 
+            var categories = _dbContext.Categories.ToList(); 
 
             return new List<Product>
             {
                 new Product
                 {
-                    Name = "Sid Meier's Civilization VII (PC) - Steam Key - EUROPE",
+                    Name = "Sid Meier's Civilization VII (PC) - Klucz",
                     Description = "Sid Meier's Civilization VII to długo oczekiwana siódma główna odsłona ukochanej serii Civilization oraz następca Civilization VI z 2016 roku. Ta niesamowita gra strategiczna została stworzona przez Firaxis Games i wydana przez 2K Games. Data premiery Civ 7 została ustalona na 11 lutego 2025 roku. Bądź pierwsi, którzy doświadczą tej wspaniałej produkcji i zdobądź swój klucz do Civilization 7 już teraz!",
                     Price = 14.99f,
                     Quantity = 1,
                     UserId = 1,
-                    Balance = 100,
                     Key = "ZRA-22445-ASZ",
                     ImagePath = "/images/Cyvilization.jpg",
-                    CategoryId = 1 
+                    CategoryId = 1
                 },
                 new Product
                 {
-                    Name = "Steam Gift Card 5 USD - Steam Key - For USD Currency Only",
+                    Name = "The Witcher 4: A New Saga (PC) - Klucz",
+                    Description = "The Witcher 4: A New Saga to długo oczekiwana kontynuacja serii Wiedźmin, opracowana przez CD Projekt Red. Ta epicka gra RPG przenosi graczy do nowego rozdziału w świecie Wiedźmina. Premiera została zaplanowana na 15 września 2025 roku. Zdobądź swoją kopię już teraz i wyrusz w niezapomnianą przygodę!",
+                    Price = 49.99f,
+                    Quantity = 5,
+                    UserId = 2,
+                    Key = "WCH-98765-PLR",
+                    ImagePath = "/images/Witcher4.jpg",
+                    CategoryId = 1
+                },
+                new Product
+                {
+                    Name = "Grand Theft Auto VI (PC) - Klucz",
+                    Description = "Grand Theft Auto VI to najnowsza część kultowej serii gier akcji od Rockstar Games. Otwarty świat, niesamowita grafika i nowa fabuła sprawią, że GTA VI stanie się prawdziwym hitem. Premiera zaplanowana jest na 10 listopada 2025 roku. Zdobądź swoją kopię i wkrocz do świata pełnego akcji i przygód!",
+                    Price = 59.99f,
+                    Quantity = 3,
+                    UserId = 1,
+                    Key = "GTA-12345-VICE",
+                    ImagePath = "/images/GTA6.jpg",
+                    CategoryId = 1
+                },
+                 new Product
+                {
+                    Name = "CS2 (Steam) - Account",
+                    Description = "Konto do gry Counter Strike 2. Zawiera rangę gold 3 oraz przegrane 800 godzin.",
+                    Price = 17.95f,
+                    Quantity = 1,
+                    UserId = 1,
+                    Key = "STM-19945-CS2",
+                    ImagePath = "/images/CS2.jpg",
+                    CategoryId = 4
+                },
+                new Product
+                {
+                    Name = "Steam Gift Card 5 USD",
                     Description = "Karty podarunkowe są łatwym sposobem doładowania twojego portfela Steam lub portfela innej osoby. Działają one w podobny sposób jak kupony upominkowe lub kody aktywacyjne do gier i mogą być świetnym prezentem dla Ciebie lub kogoś bliskiego. Zawarte w nich kwoty można wykorzystać na różnego rodzaju transakcje, takie jak zakup gier, dlc, aplikacji, programów i innych produktów ze Sklepu Steam.",
-                    Price = 5f,
+                    Price = 20.00f,
                     Quantity = 25,
                     UserId = 1,
-                    Balance = 100,
-                    Key = "GFF-76541-LUA",
-                    ImagePath = "/images/SteamGift5.jpg",
+                    Key = "GFA-76541-LUA",
+                    ImagePath = "/images/SteamGift.jpg",
                     CategoryId = 2
                 },
                 new Product
                 {
-                    Name = "Microsoft Windows 10 Home - Microsoft Key - GLOBAL",
+                    Name = "Steam Gift Card 10 USD",
+                    Description = "Karty podarunkowe są łatwym sposobem doładowania twojego portfela Steam lub portfela innej osoby. Działają one w podobny sposób jak kupony upominkowe lub kody aktywacyjne do gier i mogą być świetnym prezentem dla Ciebie lub kogoś bliskiego. Zawarte w nich kwoty można wykorzystać na różnego rodzaju transakcje, takie jak zakup gier, dlc, aplikacji, programów i innych produktów ze Sklepu Steam.",
+                    Price = 40.00f,
+                    Quantity = 25,
+                    UserId = 1,
+                    Key = "GFB-76541-LUA",
+                    ImagePath = "/images/SteamGift.jpg",
+                    CategoryId = 2
+                },
+                new Product
+                {
+                    Name = "Steam Gift Card 15 USD",
+                    Description = "Karty podarunkowe są łatwym sposobem doładowania twojego portfela Steam lub portfela innej osoby. Działają one w podobny sposób jak kupony upominkowe lub kody aktywacyjne do gier i mogą być świetnym prezentem dla Ciebie lub kogoś bliskiego. Zawarte w nich kwoty można wykorzystać na różnego rodzaju transakcje, takie jak zakup gier, dlc, aplikacji, programów i innych produktów ze Sklepu Steam.",
+                    Price = 60.00f,
+                    Quantity = 25,
+                    UserId = 1,
+                    Key = "GFC-76541-LUA",
+                    ImagePath = "/images/SteamGift.jpg",
+                    CategoryId = 2
+                },
+                new Product
+                {
+                    Name = "Steam Gift Card 20 USD",
+                    Description = "Karty podarunkowe są łatwym sposobem doładowania twojego portfela Steam lub portfela innej osoby. Działają one w podobny sposób jak kupony upominkowe lub kody aktywacyjne do gier i mogą być świetnym prezentem dla Ciebie lub kogoś bliskiego. Zawarte w nich kwoty można wykorzystać na różnego rodzaju transakcje, takie jak zakup gier, dlc, aplikacji, programów i innych produktów ze Sklepu Steam.",
+                    Price = 80.00f,
+                    Quantity = 25,
+                    UserId = 1,
+                    Key = "GFD-76541-LUA",
+                    ImagePath = "/images/SteamGift.jpg",
+                    CategoryId = 2
+                },
+                new Product
+                {
+                    Name = "Steam Gift Card 25 USD",
+                    Description = "Karty podarunkowe są łatwym sposobem doładowania twojego portfela Steam lub portfela innej osoby. Działają one w podobny sposób jak kupony upominkowe lub kody aktywacyjne do gier i mogą być świetnym prezentem dla Ciebie lub kogoś bliskiego. Zawarte w nich kwoty można wykorzystać na różnego rodzaju transakcje, takie jak zakup gier, dlc, aplikacji, programów i innych produktów ze Sklepu Steam.",
+                    Price = 100.00f,
+                    Quantity = 25,
+                    UserId = 1,
+                    Key = "GFE-76541-LUA",
+                    ImagePath = "/images/SteamGift.jpg",
+                    CategoryId = 2
+                },
+                new Product
+                {
+                    Name = "Microsoft Windows 10 Home",
                     Description = "wersja Home systemu operacyjnego Windows 10.",
                     Price = 5.99f,
                     Quantity = 5,
-                    UserId = 2, // Przypisanie sprzedawcy
-                    Balance = 100,
-                    Key = "GAM-12345-XYZ", // Klucz aktywacyjny
+                    UserId = 2,
+                    Key = "GAF-12345-XYZ",
                     ImagePath = "/images/Windows10.jpg",
                     CategoryId = 3
                 },
                 new Product
                 {
-                    Name = "Xbox Game Pass Ultimate 1 Month Non-Stackable",
+                    Name = "Microsoft Windows 11 Home",
+                    Description = "wersja Home systemu operacyjnego Windows 11.",
+                    Price = 13.99f,
+                    Quantity = 5,
+                    UserId = 2,
+                    Key = "GAG-12345-XYZ",
+                    ImagePath = "/images/Windows10.jpg",
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Microsoft Windows 10 Pro",
+                    Description = "wersja Home systemu operacyjnego Windows 10 pro.",
+                    Price = 21.99f,
+                    Quantity = 5,
+                    UserId = 2,
+                    Key = "GAH-12345-XYZ",
+                    ImagePath = "/images/Windows10.jpg",
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Microsoft Windows 11 Pro",
+                    Description = "wersja Home systemu operacyjnego Windows 11 pro.",
+                    Price = 35.99f,
+                    Quantity = 5,
+                    UserId = 2,
+                    Key = "GAI-12345-XYZ",
+                    ImagePath = "/images/Windows10.jpg",
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Xbox Game Pass Ultimate 1 Month",
                     Description = "Karta podarunkowa z dostępem do Xbox Game Pass na 1 miesiąc.",
-                    Price = 7.00f,
+                    Price = 7.99f,
                     Quantity = 100,
-                    UserId = 2, // Przypisanie sprzedawcy
-                    Balance = 100,
-                    Key = "GGG-17667-AHJ", 
+                    UserId = 2,
+                    Key = "GGJ-17667-AHJ",
+                    ImagePath = "/images/XboxPass.jpg",
+                    CategoryId = 5
+                },
+                  new Product
+                {
+                    Name = "Xbox Game Pass Ultimate 3 Month",
+                    Description = "Karta podarunkowa z dostępem do Xbox Game Pass na 1 miesiąc.",
+                    Price = 21.99f,
+                    Quantity = 100,
+                    UserId = 2,
+                    Key = "GGK-17667-AHJ",
+                    ImagePath = "/images/XboxPass.jpg",
+                    CategoryId = 5
+                },
+                    new Product
+                {
+                    Name = "Xbox Game Pass Ultimate 6 Month",
+                    Description = "Karta podarunkowa z dostępem do Xbox Game Pass na 1 miesiąc.",
+                    Price = 42.99f,
+                    Quantity = 100,
+                    UserId = 2,
+                    Key = "GGL-17667-AHJ",
                     ImagePath = "/images/XboxPass.jpg",
                     CategoryId = 5
                 }

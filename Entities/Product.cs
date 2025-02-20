@@ -16,14 +16,11 @@
 
         public int UserId { get; set; }
 
-        public int? CategoryId { get; set; } //zmienic na wymagane
+        public int CategoryId { get; set; } 
 
         public string? Key { get; set; }
 
-        public string? ImagePath { get; set; } //Zmienic ze obrazki sa wymagane
-
-        public decimal Balance { get; set; } = 0.00m;
-
+        public string ImagePath { get; set; }
         public virtual Users User { get; set; }
 
         public virtual ICollection<CartItem> CartItems { get; set; }

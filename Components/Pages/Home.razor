@@ -1,11 +1,71 @@
 ﻿@page "/"
 @using GAME4YOU.Components.Layout
+@using GAME4YOU.Components.Modal
+@using GAME4YOU.Services
+@using GAME4YOU.Entities
+@inject IServiceScopeFactory ScopeFactory
+@inject ProductService ProductService
 @layout MainLayout
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<link href="home.css" rel="stylesheet" />
 
-<h1>Hello, world!</h1>
+<div class="product-list">
+    @foreach (var product in Products)
+    {
+        <div class="product-card" @onclick="() => Open(product)">
+            <img src="@product.ImagePath" alt="@product.Name" class="product-image" />
+            <div class="product-details">
+                <h3 class="product-name">@product.Name</h3>
+                <p class="product-category">@product.Category?.Name</p>
+                <div class="product-pricehome">@($"{product.Price:F2}") zł</div>
+            </div>
+        </div>
+    }
+</div>
 
-Welcome to your new app.
+<ModalDialog @ref="@ModalDialog">
+    <div class="row">
+        @if (SelectedProduct != null)
+        {
+            <div class="product-modal">
+                <div class="product-modal-image">
+                    <img src="@SelectedProduct.ImagePath" alt="@SelectedProduct.Name" class="img-fluid" />
+                </div>
+                <div class="product-modal-details">
+                    <h3 class="product-modal-description">@SelectedProduct.Name</h3>
+                    <p>@SelectedProduct.Description</p>
+                    <p class="product-category"><strong>Kategoria:</strong> @SelectedProduct.Category?.Name</p>
+                    <p class="product-seller"><strong>Sprzedawca:</strong> @($"{SelectedProduct.User?.FirstName} {SelectedProduct.User?.LastName}")</p>
+                    <p class="product-created"><strong>Data utworzenia:</strong> @SelectedProduct.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="product-price">@($"{SelectedProduct.Price:F2}") zł</div>
+                <button class="btn btn-success">Dodaj do koszyka</button>
+                <button class="btn btn-primary">Kup teraz</button>
+            </div>
+        }
+    </div>
+</ModalDialog>
 
+@code {
+    private ModalDialog ModalDialog { get; set; }
+    private List<Product> Products = new List<Product>();
+    private Product SelectedProduct { get; set; }
 
+    private void Open(Product product)
+    {
+        SelectedProduct = product;
+        ModalDialog.Open(product); // Teraz przekazujemy produkt do modala
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using (var scope = ScopeFactory.CreateScope())
+        {
+            var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
+            Products = await productService.GetProductsAsync();
+        }
+    }
+}

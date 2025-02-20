@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GAME4YOU.Migrations
 {
     [DbContext(typeof(Game4youDbContext))]
-    [Migration("20250207234351_init")]
+    [Migration("20250220235518_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -184,10 +184,7 @@ namespace GAME4YOU.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -198,6 +195,7 @@ namespace GAME4YOU.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImagePath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Key")
@@ -351,7 +349,9 @@ namespace GAME4YOU.Migrations
                 {
                     b.HasOne("GAME4YOU.Entities.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GAME4YOU.Entities.Users", "User")
                         .WithMany("Products")
