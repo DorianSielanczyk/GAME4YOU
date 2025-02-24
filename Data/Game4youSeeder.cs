@@ -78,7 +78,7 @@ namespace GAME4YOU.Data
                     Email = "JanKowalski@game4you.com",
                     FirstName = "Jan",
                     LastName = "Kowalski",
-                    PasswordHash = "hashed_password1",
+                    Password = "12345",
                     RoleId = 2 
                 },
                 new Users
@@ -86,7 +86,7 @@ namespace GAME4YOU.Data
                     Email = "AnnaNowak@game4you.com",
                     FirstName = "Anna",
                     LastName = "Nowak",
-                    PasswordHash = "hashed_password2", 
+                    Password = "12345", 
                     RoleId = 2 
                 }
             };

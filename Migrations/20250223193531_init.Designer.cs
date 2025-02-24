@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GAME4YOU.Migrations
 {
     [DbContext(typeof(Game4youDbContext))]
-    [Migration("20250220235518_init")]
+    [Migration("20250223193531_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -260,7 +260,7 @@ namespace GAME4YOU.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

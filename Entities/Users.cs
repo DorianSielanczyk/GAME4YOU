@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace GAME4YOU.Entities
 {
@@ -12,9 +13,10 @@ namespace GAME4YOU.Entities
 
         public string LastName { get; set; }
 
-        public string PasswordHash { get; set; }
+        [Required]
+        public string Password { get; set; }
 
-        public int RoleId { get; set; }
+        public int RoleId { get; set; } = 2;
 
         public virtual Role Role { get; set; }
 

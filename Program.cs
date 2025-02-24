@@ -1,9 +1,11 @@
 using GAME4YOU.Components;
 using GAME4YOU.Data;
 using GAME4YOU.Services;
+using GAME4YOU.Entities;
 using Microsoft.EntityFrameworkCore;
 using BlazorBootstrap;
 using System;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +24,10 @@ builder.Services.AddScoped<Game4youSeeder>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
+builder.Services.AddScoped<IPasswordHasher<Users>, PasswordHasher<Users>>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<AccountService>();
 
 var app = builder.Build();
 

@@ -19,5 +19,12 @@ namespace GAME4YOU.Services
                                             .Include(p => p.User)
                                             .ToListAsync();
         }
+        public async Task<List<Product>> GetProductsByCategoryAsync(int categoryId)
+        {
+            return await _dbContext.Products.Include(p => p.Category)
+                                            .Where(p => p.CategoryId == categoryId)
+                                            .Include(p => p.User)
+                                            .ToListAsync();
+        }
     }
 }

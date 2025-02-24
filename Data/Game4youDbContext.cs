@@ -62,6 +62,14 @@ namespace GAME4YOU.Data
                 .HasMany(u => u.Orders)
                 .WithOne(o => o.User)
                 .HasForeignKey(o => o.UserId);
+
+            modelBuilder.Entity<Users>()
+                .Property(r => r.Email)
+                .IsRequired();
+
+            modelBuilder.Entity<Role>()
+               .Property(r => r.Name)
+               .IsRequired();
         }
     }
 }
