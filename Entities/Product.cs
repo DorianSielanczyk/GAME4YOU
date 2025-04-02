@@ -1,4 +1,6 @@
-﻿namespace GAME4YOU.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GAME4YOU.Entities
 {
     public class Product
     {
@@ -6,6 +8,7 @@
 
         public string Name { get; set; }
 
+        [MaxLength(450)]
         public string Description { get; set; }
 
         public float Price { get; set; }

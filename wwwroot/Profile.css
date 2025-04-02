@@ -1,0 +1,113 @@
+﻿body {
+    background-color: #d9d9d9;
+}
+
+.navbar-profile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #343a40;
+    padding: 1rem;
+    gap: 10px;
+}
+
+.nav-icons-profile {
+    display: flex;
+    margin-right: 20px;
+    gap: 5px;
+    align-items: center;
+}
+
+.profile-container {
+    display: flex;
+    align-items: center;
+}
+
+.game-text {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin-left: 17px;
+    cursor: pointer;
+    font-family: Tahoma;
+    text-decoration: none;
+}
+
+.game {
+    background: linear-gradient(to right, #8A2BE2, #9932CC, #9400D3);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.user-panel-text {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 2px;
+    font-style: italic;
+    color: white;
+}
+
+.icon-profile {
+    width: 50px;
+    height: 50px;
+    color: white;
+    cursor: pointer;
+}
+
+.icon-cart {
+    width: 40px;
+    height: 40px;
+    color: white;
+    cursor: pointer;
+}
+
+.profile-page-container {
+    display: flex;
+    height: calc(100vh - 70px);
+}
+
+.sidebar-profile {
+    width: 250px;
+    background-color: #343a40;
+    color: white;
+}
+
+    .sidebar-profile ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        text-align: center; 
+    }
+
+    .sidebar-profile li {
+        font-size: 40px;
+        font-weight: bold;
+        font-style: italic;
+        color: white;
+        width: 100%; 
+        padding: 20px 0;
+        display: flex;
+        justify-content: center; 
+        cursor: pointer; 
+        transition: background 0.3s ease-in-out; 
+    }
+
+        .sidebar-profile li:hover {
+            background: #8A2BE2;
+        }
+
+    .sidebar-profile a {
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+.content-profile {
+    flex: 1;
+    padding: 20px;
+    background-color: #d9d9d9;
+}
+

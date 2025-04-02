@@ -1,0 +1,77 @@
+﻿@page "/login"
+@using GAME4YOU.Services
+@inject AccountService AccountService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@using GAME4YOU.Entities
+@rendermode InteractiveServer
+
+<link href="register.css" rel="stylesheet" />
+
+<h3>Logowanie</h3>
+
+<div class="register-container">
+
+    <NavLink href="/" style="text-decoration: none;">
+        <span class="game-text">
+            <span class="game">GAME</span>4YOU
+        </span>
+    </NavLink>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <p style="color:red;">@ErrorMessage</p>
+    }
+
+    <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin" FormName="LoginForm">
+        <DataAnnotationsValidator />
+
+        <div class="input-field">
+            <label for="email">Email:</label>
+            <InputText id="email" @bind-Value="loginModel.Email" class="input-field" />
+            <ValidationMessage For="@(() => loginModel.Email)" />
+        </div>
+
+        <div class="input-field">
+            <label for="password">Hasło:</label>
+            <InputText id="password" @bind-Value="loginModel.Password" type="password" class="input-field" />
+            <ValidationMessage For="@(() => loginModel.Password)" />
+        </div>
+
+        <div class="button-container-login">
+            <button type="button" @onclick="NavigateToRegister">Rejestracja</button>
+            <button type="submit">Zaloguj</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    private string ErrorMessage;
+
+    private async Task HandleLogin()
+    {
+        var token = await AccountService.LoginUser(loginModel.Email, loginModel.Password);
+
+        if (string.IsNullOrEmpty(token))
+        {
+            ErrorMessage = "Niepoprawny e-mail lub hasło.";
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "authToken", token);
+            var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var firstName = jwtToken.Claims.FirstOrDefault(c => c.Type == "firstName")?.Value ?? "Nieznany";
+            var lastName = jwtToken.Claims.FirstOrDefault(c => c.Type == "lastName")?.Value ?? "";
+
+            await JSRuntime.InvokeVoidAsync("alert", $"Poprawnie się zalogowałeś, {firstName} {lastName}!");
+            Navigation.NavigateTo("/");  
+        }
+    }
+
+    private void NavigateToRegister()
+    {
+        Navigation.NavigateTo("/register"); 
+    }
+}

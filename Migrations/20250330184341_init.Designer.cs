@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GAME4YOU.Migrations
 {
     [DbContext(typeof(Game4youDbContext))]
-    [Migration("20250223193531_init")]
+    [Migration("20250330184341_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -192,7 +192,8 @@ namespace GAME4YOU.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ImagePath")
                         .IsRequired()

@@ -1,49 +1,70 @@
 ﻿@page "/register"
 @using GAME4YOU.Entities
 @using GAME4YOU.Services
+@using Microsoft.AspNetCore.Authorization
 @inject AccountService AccountService
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
+<link href="register.css" rel="stylesheet" />
+
 <h3>Rejestracja</h3>
 
-@if (!string.IsNullOrEmpty(Message))
-{
-    <p style="color:red;">@Message</p>
-}
+<div class="register-container">
 
-<EditForm Model="@newUser" OnValidSubmit="@HandleRegister" FormName="RegisterForm">
-    <DataAnnotationsValidator />
+    <NavLink href="/" style="text-decoration: none;">
+        <span class="game-text">
+            <span class="game">GAME</span>4YOU
+        </span>
+    </NavLink>
 
-    <div>
-        <label>Email:</label>
-        <InputText @bind-Value="newUser.Email" type="email" />
-        <ValidationMessage For="@(() => newUser.Email)" />
-    </div>
+    @if (!string.IsNullOrEmpty(Message))
+    {
+        <p style="color:red;">@Message</p>
+    }
 
-    <div>
-        <label>Hasło:</label>
-        <InputText @bind-Value="newUser.Password" type="password" />
-        <ValidationMessage For="@(() => newUser.Password)" />
-    </div>
+    <EditForm Model="@newUser" OnValidSubmit="@HandleRegister" FormName="RegisterForm" novalidate>
+        <DataAnnotationsValidator />
 
-    <div>
-        <label>Imię:</label>
-        <InputText @bind-Value="newUser.FirstName" />
-        <ValidationMessage For="@(() => newUser.FirstName)" />
-    </div>
+        <div class="input-field">
+            <label for="FirstName">Imię:</label>
+            <InputText id="FirstName" @bind-Value="newUser.FirstName" class="input-field" />
+            <ValidationMessage For="@(() => newUser.FirstName)" />
+        </div>
 
-    <div>
-        <label>Nazwisko:</label>
-        <InputText @bind-Value="newUser.LastName" />
-        <ValidationMessage For="@(() => newUser.LastName)" />
-    </div>
+        <div class="input-field">
+            <label for="LastName">Nazwisko:</label>
+            <InputText id="LastName" @bind-Value="newUser.LastName" class="input-field" />
+            <ValidationMessage For="@(() => newUser.LastName)" />
+        </div>
 
-    <button type="submit">Zarejestruj</button>
-</EditForm>
+        <div class="input-field">
+            <label for="Email">Email:</label>
+            <InputText id="Email" @bind-Value="newUser.Email" type="email" class="input-field" />
+            <ValidationMessage For="@(() => newUser.Email)" />
+        </div>
+
+        <div class="input-field">
+            <label for="Password">Hasło:</label>
+            <InputText id="Password" @bind-Value="newUser.Password" type="password" class="input-field" />
+            <ValidationMessage For="@(() => newUser.Password)" />
+            <ul class="password-requirements">
+                <li>Co najmniej 5 znaków</li>
+                <li>Co najmniej jedną wielką literę</li>
+                <li>Co najmniej jedną cyfrę</li>
+                <li>Co najmniej jeden znak specjalny</li>
+            </ul>
+        </div>
+
+        <div class="button-container-register">
+            <button type="button" @onclick="NavigateToLogin">Logowanie</button>
+            <button type="submit">Zarejestruj</button>
+        </div>
+    </EditForm>
+</div>
 
 @code {
-    private Users newUser = new Users();  
+    private Users newUser = new Users();
     private string Message = string.Empty;
 
     private async Task HandleRegister()
@@ -57,5 +78,10 @@
         {
             Message = "Użytkownik już istnieje.";
         }
+    }
+
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/login");
     }
 }

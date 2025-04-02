@@ -3,11 +3,17 @@ using GAME4YOU.Data;
 using GAME4YOU.Services;
 using GAME4YOU.Entities;
 using Microsoft.EntityFrameworkCore;
-using BlazorBootstrap;
-using System;
 using Microsoft.AspNetCore.Identity;
+using GAME4YOU;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Authentication JWT
+var authenticationSettings = new AuthenticationSettings();
+builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
+builder.Services.AddSingleton(authenticationSettings);
 
 // MSSQL Configuration
 builder.Services.AddDbContext<Game4youDbContext>(options =>
@@ -24,10 +30,29 @@ builder.Services.AddScoped<Game4youSeeder>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddBlazorBootstrap();
+builder.Services.AddAuthentication(option =>
+{
+    option.DefaultAuthenticateScheme = "Bearer";
+    option.DefaultScheme = "Bearer";
+    option.DefaultChallengeScheme = "Bearer";
+}).AddJwtBearer(cfg =>
+{
+    var authenticationSettings = builder.Services.BuildServiceProvider().GetRequiredService<AuthenticationSettings>();
+    cfg.RequireHttpsMetadata = false;
+    cfg.SaveToken = true;
+    cfg.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = authenticationSettings.JwtIssuer,
+        ValidAudience = authenticationSettings.JwtIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
+    };
+});
 builder.Services.AddScoped<IPasswordHasher<Users>, PasswordHasher<Users>>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddAuthenticationCore();
+
 
 var app = builder.Build();
 
@@ -52,6 +77,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "GAME4YOU"); });
@@ -61,6 +88,5 @@ app.MapControllers();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
 
 app.Run();

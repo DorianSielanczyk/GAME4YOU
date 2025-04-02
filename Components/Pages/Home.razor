@@ -5,6 +5,8 @@
 @inject IServiceScopeFactory ScopeFactory
 @inject ProductService ProductService
 @inject CategoryService CategoryService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
 @rendermode InteractiveServer
 
 <link href="home.css" rel="stylesheet" />
@@ -38,14 +40,35 @@
 
     <div class="nav-icons">
         <div class="profile-container">
-            <NavLink href="/profile" style="text-decoration: none; color: white;">
+            <NavLink href="#" style="text-decoration: none; color: white;" @onclick="HandleProfileClick">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="icon-profile">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 </svg>
             </NavLink>
+
+            @if (ShowLoginModal)
+            {
+                <div class="modal-login">
+                    <div class="modal-content-login">
+                        <p class="login-modal-text">Aby przejść do tej zakładki, musisz się zalogować.</p>
+                        <div class="modal-buttons-login">
+                            <button class="login-modal-button1" @onclick="CloseModal">Zamknij</button>
+                            <button class="login-modal-button2" @onclick="NavigateToLogin">Zaloguj się</button>
+                        </div>
+                    </div>
+                </div>
+            }
+
             <div class="nav-links">
-                <NavLink href="/login" class="nav-link" style="text-decoration: none; color: white;">Zaloguj się</NavLink>
-                <NavLink href="/register" class="nav-link" style="text-decoration: none; color: white;">Załóż konto</NavLink>
+                @if (!IsLoggedIn)
+                {
+                    <NavLink href="/login" class="nav-link" style="text-decoration: none; color: white;">Zaloguj się</NavLink>
+                    <NavLink href="/register" class="nav-link" style="text-decoration: none; color: white;">Załóż konto</NavLink>
+                }
+                else
+                {
+                    <p class="nav-link-logout" @onclick="Logout">Wyloguj</p>
+                }
             </div>
         </div>
         <NavLink href="/cart" style="text-decoration: none; color: white;">
@@ -88,7 +111,7 @@
             </div>
             <div class="modal-footer">
                 <div class="product-price">@($"{SelectedProduct.Price:F2}") zł</div>
-                <button class="btn btn-success">Dodaj do koszyka</button>
+                <button class="btn btn-success" @onclick="HandleCartClick">Dodaj do koszyka</button>
                 <button class="btn btn-primary">Kup teraz</button>
             </div>
         }
@@ -101,7 +124,10 @@
     private ModalDialog ModalDialog { get; set; }
     private Product SelectedProduct { get; set; }
     private int SelectedCategoryId { get; set; } = 6;
+    private bool IsLoggedIn;
     private string SearchQuery = "";
+    private bool _isFirstRender = true;
+    private bool ShowLoginModal = false;
 
     private void Open(Product product)
     {
@@ -139,5 +165,58 @@
             Categories = await categoryService.GetCategoriesAsync();
             await LoadProducts();
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            IsLoggedIn = !string.IsNullOrEmpty(token);
+            StateHasChanged();
+        }
+    }
+
+    private void HandleProfileClick()
+    {
+        if (IsLoggedIn)
+        {
+            Navigation.NavigateTo("/profile");
+        }
+        else
+        {
+            ShowLoginModal = true;
+        }
+    }
+
+    private void HandleCartClick()
+    {
+        if (IsLoggedIn)
+        {
+            Navigation.NavigateTo("/cart");
+        }
+        else
+        {
+            ShowLoginModal = true;
+        }
+    }
+
+    private async Task Logout()
+    {
+        await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "authToken");
+        IsLoggedIn = false;
+        StateHasChanged();
+    }
+
+    private void NavigateToLogin()
+    {
+        ShowLoginModal = false;
+        Navigation.NavigateTo("/login");
+    }
+
+
+    private void CloseModal()
+    {
+        ShowLoginModal = false;
     }
 }

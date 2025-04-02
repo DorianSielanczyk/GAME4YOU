@@ -7,13 +7,18 @@ namespace GAME4YOU.Entities
     {
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "Email jest wymagany.")]
+        [RegularExpression(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", ErrorMessage = "Proszę podać poprawny adres email.")]
         public string Email { get; set; }
 
+        [Required(ErrorMessage = "Imię jest wymagane.")]
         public string FirstName { get; set; }
 
+        [Required(ErrorMessage = "Nazwisko jest wymagane.")]
         public string LastName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Hasło jest wymagane.")]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{5,}$", ErrorMessage = "Hasło nie spełnia wymagań.")]
         public string Password { get; set; }
 
         public int RoleId { get; set; } = 2;
