@@ -1,4 +1,5 @@
 ﻿using GAME4YOU.Entities;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -71,6 +72,9 @@ namespace GAME4YOU.Data
 
         private IEnumerable<Users> GetUsers()
         {
+
+            var passwordHasher = new PasswordHasher<Users>();
+
             return new List<Users>
             {
                 new Users
@@ -88,6 +92,14 @@ namespace GAME4YOU.Data
                     LastName = "Nowak",
                     Password = "12345", 
                     RoleId = 2 
+                },
+                 new Users //User for tests
+                {
+                    Email = "test",
+                    FirstName = "Testowy",
+                     LastName = "Użytkownik",
+                    Password = passwordHasher.HashPassword(null, "test"),
+                    RoleId = 2
                 }
             };
         }

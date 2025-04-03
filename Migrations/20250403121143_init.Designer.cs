@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GAME4YOU.Migrations
 {
     [DbContext(typeof(Game4youDbContext))]
-    [Migration("20250330184341_init")]
+    [Migration("20250403121143_init")]
     partial class init
     {
         /// <inheritdoc />
