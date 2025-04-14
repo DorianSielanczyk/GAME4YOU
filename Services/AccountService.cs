@@ -63,6 +63,7 @@ namespace GAME4YOU.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("email", user.Email),
                 new Claim("role", roleName),
                 new Claim("firstName", user.FirstName), 
                 new Claim("lastName", user.LastName)

@@ -1,19 +1,22 @@
-﻿@page "/profile"
+﻿@page "/profile/account"
 @rendermode InteractiveServer
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject CartService CartService
 @using System.IdentityModel.Tokens.Jwt
+@using System.Linq
 
 <link href="Profile.css" rel="stylesheet" />
 
 <div class="navbar-profile">
-    <NavLink href="/" class="logo-link" style="text-decoration: none;">
+    <!-- Logo -->
+    <NavLink href="/" style="text-decoration: none;">
         <span class="game-text">
             <span class="game">GAME</span>4YOU
         </span>
     </NavLink>
 
+    <!-- Menu przeniesione do headera -->
     <div class="header-menu">
         <ul>
             <li><NavLink href="/profile/account">Moje konto</NavLink></li>
@@ -22,53 +25,88 @@
         </ul>
     </div>
 
+    <!-- Ikony (profil i koszyk) -->
     <div class="nav-icons-profile">
         <div class="profile-container-profile">
-            <NavLink href="/profile" class="profile-link" style="text-decoration: none; color: white;">
+            <NavLink href="/profile" style="text-decoration: none; color: white;" class="profile-link">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="icon-profile">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 </svg>
             </NavLink>
         </div>
 
-        <NavLink href="/cart" class="cart-link" style="text-decoration: none; color: white;" @onclick="HandleCartClickWeb">
+        <NavLink href="/cart" class="cart-link" style="text-decoration: none; color: white;">
             <svg xmlns="http://www.w3.org/2000/svg" fill="#343a40" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-cart">
                 <path stroke-linecap="round" stroke-linejoin="round"
                       d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218
-                      c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0
+                      c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0
                       .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
             </svg>
             @if (CartItemCount > 0)
             {
-                <span class="cart-count">@CartItemCount</span>
+                <span style="position: relative; top: -8px; background-color: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px;">
+                    @CartItemCount
+                </span>
             }
         </NavLink>
     </div>
 </div>
 
 <div class="profile-page-container">
-    <div class="content-profile">
+    <div class="profile-container">
+        <h2 class="profile-title">👤 Twój profil</h2>
+
         @if (isLoaded)
         {
-            <h2>Cześć, @userFirstName!</h2>
-            <div class="content-profile-information">
-                <div>
-                    <strong>Moje konto:</strong>
-                    <p>Możesz edytować tutaj dane swojego konta.</p>
-                </div>
-                <div>
-                    <strong>Zamówienia:</strong>
-                    <p>Możesz tutaj przejrzeć historię swoich zamówień.</p>
-                </div>
-                <div>
-                    <strong>Sprzedaż:</strong>
-                    <p>Możesz wystawić na sklep swoją ofertę, edytować ją itd.</p>
-                </div>
-            </div>
+            <ul class="profile-list">
+                <li>
+                    <div class="profile-info">
+                        <div class="profile-data">
+                            <span class="icon">🧍</span>
+                            <label>Imię:</label>
+                            <span>@userFirstName</span>
+                        </div>
+                    </div>
+                    <button class="edit-button">Edytuj</button>
+                </li>
+
+                <li>
+                    <div class="profile-info">
+                        <div class="profile-data">
+                            <span class="icon">👪</span>
+                            <label>Nazwisko:</label>
+                            <span>@userLastName</span>
+                        </div>
+                    </div>
+                    <button class="edit-button">Edytuj</button>
+                </li>
+
+                <li>
+                    <div class="profile-info">
+                        <div class="profile-data">
+                            <span class="icon">📧</span>
+                            <label>Email:</label>
+                            <span>@userEmail</span>
+                        </div>
+                    </div>
+                    <button class="edit-button">Edytuj</button>
+                </li>
+
+                <li>
+                    <div class="profile-info">
+                        <div class="profile-data">
+                            <span class="icon">🎖️</span>
+                            <label>Rola:</label>
+                            <span>@(userRole.ToLower() == "user" ? "Użytkownik" : userRole)</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         }
         else
         {
-            <p>Ładowanie danych użytkownika...</p>
+            <p>Ładowanie danych...</p>
         }
     </div>
 </div>
@@ -99,12 +137,12 @@
 </div>
 
 @code {
+    private string userEmail, userFirstName, userLastName, userRole;
+    private bool isLoaded = false;
+    private bool _showPassword = false;
     private bool _hasCheckedToken = false;
     private int CartItemCount;
     private bool IsLoggedIn;
-    private bool ShowLoginModal = false;
-    private string userFirstName;
-    private bool isLoaded = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -112,39 +150,39 @@
         {
             _hasCheckedToken = true;
             var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+
             if (string.IsNullOrWhiteSpace(token))
             {
                 IsLoggedIn = false;
                 Navigation.NavigateTo("/", true);
                 return;
             }
+
             IsLoggedIn = true;
             CartItemCount = CartService.GetCartItemCount();
+
             try
             {
+                JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
                 var handler = new JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(token);
-                var firstNameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "firstName");
-                userFirstName = firstNameClaim?.Value ?? "Użytkowniku";
+                userEmail = jwtToken.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+                userFirstName = jwtToken.Claims.FirstOrDefault(c => c.Type == "firstName")?.Value;
+                userLastName = jwtToken.Claims.FirstOrDefault(c => c.Type == "lastName")?.Value;
+                userRole = jwtToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
             }
-            catch
+            catch (Exception ex)
             {
-                userFirstName = "Użytkowniku";
+                Console.WriteLine($"Błąd podczas dekodowania tokenu: {ex.Message}");
             }
+
             isLoaded = true;
             StateHasChanged();
         }
     }
 
-    private void HandleCartClickWeb()
+    void TogglePassword()
     {
-        if (IsLoggedIn)
-        {
-            Navigation.NavigateTo("/cart");
-        }
-        else
-        {
-            ShowLoginModal = true;
-        }
+        _showPassword = !_showPassword;
     }
 }

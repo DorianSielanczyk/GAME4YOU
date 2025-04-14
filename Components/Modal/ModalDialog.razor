@@ -1,4 +1,4 @@
-﻿@using GAME4YOU.Entities
+﻿﻿@using GAME4YOU.Entities
 @rendermode InteractiveServer
 
 <link href="ModalDialog.css" rel="stylesheet" />
@@ -31,21 +31,23 @@
     private bool isCssLoaded = false;
     private Product SelectedProduct { get; set; }
 
-    public void Open(Product product)
+    public Task Open(Product product)
     {
         SelectedProduct = product;
         modalDisplay = "block";
         modalClass = "show";
         showBackdrop = true;
         StateHasChanged();
+        return Task.CompletedTask;
     }
 
-    public void Close()
+    public Task Close()
     {
         modalDisplay = "none";
         modalClass = string.Empty;
         showBackdrop = false;
         SelectedProduct = null;
         StateHasChanged();
+        return Task.CompletedTask;
     }
 }

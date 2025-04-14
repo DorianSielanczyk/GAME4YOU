@@ -1,5 +1,4 @@
-﻿@page "/"
-@using GAME4YOU.Components.Modal
+﻿@page "/cart"
 @using GAME4YOU.Services
 @using GAME4YOU.Entities
 @inject CartService CartService
@@ -20,10 +19,10 @@
     </NavLink>
 
     <div class="search-container">
-        <input type="text" class="search-bar" placeholder="Szukaj..." @bind="SearchQuery" @oninput="@LoadProducts">
+        <input type="text" class="search-bar" placeholder="Szukaj..." @bind="SearchQuery" @oninput="LoadProducts">
         <div class="d-flex align-items-center">
             <div class="form-group me-3">
-                <select id="categorySelect" class="form-select" @bind="@SelectedCategoryId" @bind:after="@LoadProducts">
+                <select id="categorySelect" class="form-select" @bind="SelectedCategoryId" @bind:after="LoadProducts">
                     @foreach (var category in Categories)
                     {
                         <option value="@category.Id">@category.Name</option>
@@ -32,7 +31,7 @@
             </div>
         </div>
 
-        <button class="search-button" @onclick="@LoadProducts">
+        <button class="search-button" @onclick="LoadProducts">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="icon-search">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
@@ -51,12 +50,9 @@
             {
                 <div class="modal-login">
                     <div class="modal-content-login">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" aria-label="Close" @onclick="CloseModal"></button>
-                        </div>
                         <p class="login-modal-text">Aby przejść do tej zakładki, musisz się zalogować.</p>
                         <div class="modal-buttons-login">
-                            <button class="login-modal-button1" @onclick="NavigateToRegister">Zarejestruj się</button>
+                            <button class="login-modal-button1" @onclick="CloseModal">Zamknij</button>
                             <button class="login-modal-button2" @onclick="NavigateToLogin">Zaloguj się</button>
                         </div>
                     </div>
@@ -75,7 +71,7 @@
                 }
             </div>
         </div>
-        <NavLink href="#" class="cart-link" style="text-decoration: none; color: white;" @onclick="HandleCartClickWeb">
+        <NavLink href="#" class="cart-link" style="text-decoration: none; color: white;">
             <svg xmlns="http://www.w3.org/2000/svg" fill="#343a40" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-cart">
                 <path stroke-linecap="round" stroke-linejoin="round"
                       d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218
@@ -93,55 +89,84 @@
 </div>
 
 <div class="main-content">
-    <div class="product-list">
-        @foreach (var product in Products)
-        {
-            <div class="product-card" @onclick="() => Open(product)">
-                <img src="@product.ImagePath" alt="@product.Name" class="product-image" />
-                <div class="product-details">
-                    <h3 class="product-name">@product.Name</h3>
-                    <p class="product-category">@product.Category?.Name</p>
-                    <div class="product-pricehome">@($"{product.Price:F2}") zł</div>
-                </div>
-            </div>
-        }
-    </div>
+    <div class="cart-page-container">
+        <div class="cart-header">
+            <h1>Twój koszyk</h1>
+        </div>
 
-    <ModalDialog @ref="@ModalDialog">
-        <div class="row">
-            @if (SelectedProduct != null)
+        <div class="cart-items">
+            @if (!CartService.GetCartItems().Any())
             {
-                <div class="product-modal">
-                    <div class="product-modal-image">
-                        <img src="@SelectedProduct.ImagePath" alt="@SelectedProduct.Name" class="img-fluid" />
+                <p>Koszyk jest pusty.</p>
+            }
+            else
+            {
+                @foreach (var item in FilteredCartItems)
+                {
+                    <div class="cart-item">
+                        <img class="cart-image" src="@item.Product.ImagePath" alt="@item.Product.Name" />
+
+                        <div class="cart-details">
+                            <strong>@item.Product.Name</strong>
+                        </div>
+
+                        <div>
+                            <select class="custom-select" value="@item.Quantity" @onchange="e => OnQuantityChange(item, e)">
+                                @for (int i = 1; i <= item.Product.Quantity; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                            <svg class="remove-cart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round"
+                                 @onclick="@(() => RemoveFromCart(item.Product))">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M4 19a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                <path d="M13 17h-7v-14h-2" />
+                                <path d="M6 5l14 1l-1 7h-13" />
+                                <path d="M22 22l-5 -5" />
+                                <path d="M17 22l5 -5" />
+                            </svg>
+                        </div>
+
+                        <div class="product-price">
+                            @((item.Product.Price * item.Quantity).ToString("F2")) zł
+                        </div>
                     </div>
-                    <div class="product-modal-details">
-                        <h3 class="product-modal-description">@SelectedProduct.Name</h3>
-                        <p>@SelectedProduct.Description</p>
-                        <p class="product-category"><strong>Kategoria:</strong> @SelectedProduct.Category?.Name</p>
-                        <p class="product-seller"><strong>Sprzedawca:</strong> @($"{SelectedProduct.User?.FirstName} {SelectedProduct.User?.LastName}")</p>
-                        <p class="product-created"><strong>Data utworzenia:</strong> @SelectedProduct.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="product-quantity">@($"Pozostała ilość: {SelectedProduct.Quantity}") </div>
-                    <div class="product-price">@($"{SelectedProduct.Price:F2}") zł</div>
-                    <button class="btn btn-success" @onclick="HandleCartClick">Dodaj do koszyka</button>
-                    <button class="btn btn-primary">Kup teraz</button>
+                }
+            }
+
+            @if (TotalPages > 1)
+            {
+                <div class="pagination">
+                    <button @onclick="PreviousPage" disabled="@(@CurrentPage == 1)">Poprzednia</button>
+                    <span>Strona @CurrentPage z @TotalPages</span>
+                    <button @onclick="NextPage" disabled="@(@CurrentPage == TotalPages)">Następna</button>
                 </div>
             }
         </div>
-    </ModalDialog>
-</div>
 
-@if (TotalPages > 1)
-{
-    <div class="pagination">
-        <button @onclick="PreviousPage" disabled="@(@CurrentPage == 1)">Poprzednia</button>
-        <span>Strona @CurrentPage z @TotalPages</span>
-        <button @onclick="NextPage" disabled="@(@CurrentPage == TotalPages)">Następna</button>
+        <div class="summary">
+            <h3>Podsumowanie zamówienia</h3>
+
+            <ul class="order-summary-list">
+                @foreach (var item in CartService.GetCartItems())
+                {
+                    <li>
+                        @item.Product.Name x @item.Quantity
+                    </li>
+                }
+            </ul>
+
+            <p><strong>Łączna cena:</strong> @TotalPrice.ToString("0.00") zł</p>
+
+            <button>
+                Kup
+            </button>
+        </div>
     </div>
-}
+</div>
 
 <div class="footer">
     <div class="footer-inner">
@@ -170,72 +195,26 @@
 
 
 @code {
-    private List<Product> Products = new List<Product>();
-    private List<Category> Categories = new List<Category>();
-    private ModalDialog ModalDialog { get; set; }
-    private Product SelectedProduct { get; set; }
+    private List<Category> Categories = new();
+    private List<CartItem> FilteredCartItems = new();
     private int SelectedCategoryId { get; set; } = 6;
     private bool IsLoggedIn;
     private string SearchQuery = "";
-    private bool _isFirstRender = true;
     private bool ShowLoginModal = false;
     private int CartItemCount;
     private int CurrentPage = 1;
-    private int ItemsPerPage = 15;
-    private int TotalProductCount;
-    private int TotalPages => (int)Math.Ceiling((double)TotalProductCount / ItemsPerPage);
+    private int ItemsPerPage = 5;
+    private int TotalPages => (int)Math.Ceiling((double)CartService.GetCartItems().Count() / ItemsPerPage);
 
-
-    private void Open(Product product)
-    {
-        SelectedProduct = product;
-        ModalDialog.Open(product);
-    }
-
-    private async Task LoadProducts()
-    {
-        using (var scope = ScopeFactory.CreateScope())
-        {
-            var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
-
-            List<Product> allProducts = new();
-
-            if (SelectedCategoryId == 6)
-            {
-                allProducts = await productService.GetProductsAsync();
-            }
-            else
-            {
-                allProducts = await productService.GetProductsByCategoryAsync(SelectedCategoryId);
-            }
-
-            if (!string.IsNullOrEmpty(SearchQuery))
-            {
-                allProducts = allProducts
-                    .Where(p => p.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-            }
-
-            Products = allProducts
-                .Skip((CurrentPage - 1) * ItemsPerPage)
-                .Take(ItemsPerPage)
-                .ToList();
-
-            TotalProductCount = allProducts.Count;
-        }
-
-        await InvokeAsync(StateHasChanged);
-    }
+    private decimal TotalPrice => CartService.GetCartItems()
+       .Sum(item => (decimal)item.Product.Price * item.Quantity);
 
     protected override async Task OnInitializedAsync()
     {
-        using (var scope = ScopeFactory.CreateScope())
-        {
-            var productService = scope.ServiceProvider.GetRequiredService<ProductService>();
-            var categoryService = scope.ServiceProvider.GetRequiredService<CategoryService>();
-            Categories = await categoryService.GetCategoriesAsync();
-            await LoadProducts();
-        }
+        using var scope = ScopeFactory.CreateScope();
+        var categoryService = scope.ServiceProvider.GetRequiredService<CategoryService>();
+        Categories = await categoryService.GetCategoriesAsync();
+        await LoadProducts();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -244,9 +223,41 @@
         {
             var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
             IsLoggedIn = !string.IsNullOrEmpty(token);
+            if (!IsLoggedIn)
+            {
+                Navigation.NavigateTo("/");
+                ShowLoginModal = true;
+            }
             CartItemCount = CartService.GetCartItemCount();
             StateHasChanged();
         }
+    }
+
+    private async Task LoadProducts()
+    {
+        var allCartItems = CartService.GetCartItems();
+
+        var filtered = allCartItems
+            .Where(item =>
+                (string.IsNullOrWhiteSpace(SearchQuery) || item.Product.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) &&
+                (SelectedCategoryId == 6 || (item.Product.CategoryId != null && item.Product.CategoryId == SelectedCategoryId)))
+            .ToList();
+
+        int filteredTotalPages = (int)Math.Ceiling((double)filtered.Count / ItemsPerPage);
+        if (filteredTotalPages == 0) filteredTotalPages = 1;
+
+        if (CurrentPage > filteredTotalPages)
+        {
+            CurrentPage = filteredTotalPages;
+        }
+
+        FilteredCartItems = filtered
+            .Skip((CurrentPage - 1) * ItemsPerPage)
+            .Take(ItemsPerPage)
+            .ToList();
+
+        await Task.Yield();
+        StateHasChanged();
     }
 
     private void HandleProfileClick()
@@ -261,46 +272,15 @@
         }
     }
 
-    private void HandleCartClickWeb()
+    private void NavigateToLogin()
     {
-        if (IsLoggedIn)
-        {
-            Navigation.NavigateTo("/cart");
-        }
-        else
-        {
-            ShowLoginModal = true;
-        }
+        ShowLoginModal = false;
+        Navigation.NavigateTo("/login");
     }
 
-    private async void HandleCartClick()
+    private void CloseModal()
     {
-        if (IsLoggedIn)
-        {
-            if (SelectedProduct is not null)
-            {
-                int cartProductCount = CartService.GetCartItemCountByProduct(SelectedProduct.Id);
-
-                int availableQuantity = SelectedProduct.Quantity;
-
-                if (cartProductCount >= availableQuantity)
-                {
-                    await JSRuntime.InvokeVoidAsync("alert", "Niestety nie posiadamy już więcej sztuk tego produktu!");
-                    await ModalDialog.Close();
-                }
-                else
-                {
-                    CartService.AddToCart(SelectedProduct);
-                    CartItemCount = CartService.GetCartItemCount();
-                    StateHasChanged();
-                    await ModalDialog.Close();
-                }
-            }
-        }
-        else
-        {
-            ShowLoginModal = true;
-        }
+        ShowLoginModal = false;
     }
 
     private async Task Logout()
@@ -313,22 +293,27 @@
         await JSRuntime.InvokeVoidAsync("location.reload");
     }
 
-    private void NavigateToLogin()
+    private void RemoveFromCart(Product product)
     {
-        ShowLoginModal = false;
-        Navigation.NavigateTo("/login");
+        CartService.RemoveFromCart(product);
+        CartItemCount = CartService.GetCartItemCount();
+        LoadProducts();
     }
 
-    private void NavigateToRegister()
+    private void UpdateCart(ChangeEventArgs e)
     {
-        ShowLoginModal = false;
-        Navigation.NavigateTo("/register");
+        CartItemCount = CartService.GetCartItemCount();
     }
 
-
-    private void CloseModal()
+    private void OnQuantityChange(CartItem item, ChangeEventArgs e)
     {
-        ShowLoginModal = false;
+        if (int.TryParse(e.Value?.ToString(), out int newQty))
+        {
+            item.Quantity = newQty;
+            CartService.UpdateQuantity(item.Product, newQty);
+            CartItemCount = CartService.GetCartItemCount();
+            StateHasChanged();
+        }
     }
 
     private async Task NextPage()

@@ -40,13 +40,13 @@ namespace GAME4YOU.Data
                 .HasMany(c => c.CartItems)
                 .WithOne(ci => ci.Cart)
                 .HasForeignKey(ci => ci.CartId)
-                .OnDelete(DeleteBehavior.Restrict);  // Zapobiega problemowi cykli kaskadowych
+                .OnDelete(DeleteBehavior.Restrict);  
 
             modelBuilder.Entity<Order>()
                 .HasMany(o => o.OrderItems)
                 .WithOne(oi => oi.Order)
                 .HasForeignKey(oi => oi.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);  // Zmieniamy na Restrict, aby uniknąć kaskadowego usuwania
+                .OnDelete(DeleteBehavior.Restrict);  
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)
