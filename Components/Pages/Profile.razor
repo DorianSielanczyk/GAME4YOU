@@ -47,29 +47,37 @@
 </div>
 
 <div class="profile-page-container">
-    <div class="content-profile">
-        @if (isLoaded)
-        {
-            <h2>Cześć, @userFirstName!</h2>
-            <div class="content-profile-information">
-                <div>
-                    <strong>Moje konto:</strong>
-                    <p>Możesz edytować tutaj dane swojego konta.</p>
+    <div class="profile-page">
+        <section class="profile-content">
+            @if (isLoaded)
+            {
+                <div class="welcome-banner">
+                    <h2>Cześć, @userFirstName!</h2>
+                    <p>Witamy w Twoim profilu – zarządzaj swoim kontem, przeglądaj zamówienia lub wystaw ofertę!</p>
                 </div>
-                <div>
-                    <strong>Zamówienia:</strong>
-                    <p>Możesz tutaj przejrzeć historię swoich zamówień.</p>
+                <div class="profile-sections">
+                    <article class="profile-card">
+                        <h3>Moje konto</h3>
+                        <p>Edytuj dane swojego konta, zmień swój email.</p>
+                        <NavLink href="/profile/account" class="card-button">Edytuj konto</NavLink>
+                    </article>
+                    <article class="profile-card mid">
+                        <h3>Zamówienia</h3>
+                        <p>Sprawdź status swoich zamówień oraz historię zakupów.</p>
+                        <NavLink href="/profile/orders" class="card-button">Przeglądaj zamówienia</NavLink>
+                    </article>
+                    <article class="profile-card">
+                        <h3>Sprzedaż</h3>
+                        <p>Zarządzaj ofertami, dodawaj nowe produkty lub edytuj istniejące.</p>
+                        <NavLink href="/profile/selling" class="card-button">Zarządzaj sprzedażą</NavLink>
+                    </article>
                 </div>
-                <div>
-                    <strong>Sprzedaż:</strong>
-                    <p>Możesz wystawić na sklep swoją ofertę, edytować ją itd.</p>
-                </div>
-            </div>
-        }
-        else
-        {
-            <p>Ładowanie danych użytkownika...</p>
-        }
+            }
+            else
+            {
+                <p>Ładowanie danych użytkownika...</p>
+            }
+        </section>
     </div>
 </div>
 
