@@ -2,12 +2,14 @@
 @using GAME4YOU.Components.Modal
 @using GAME4YOU.Services
 @using GAME4YOU.Entities
+@using System.IdentityModel.Tokens.Jwt
 @inject CartService CartService
 @inject IServiceScopeFactory ScopeFactory
 @inject ProductService ProductService
 @inject CategoryService CategoryService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
+@inject PurchaseService PurchaseService
 @rendermode InteractiveServer
 
 <link href="home.css" rel="stylesheet" />
@@ -127,7 +129,7 @@
                     <div class="product-quantity">@($"Pozostała ilość: {SelectedProduct.Quantity}") </div>
                     <div class="product-price">@($"{SelectedProduct.Price:F2}") zł</div>
                     <button class="btn btn-success" @onclick="HandleCartClick">Dodaj do koszyka</button>
-                    <button class="btn btn-primary">Kup teraz</button>
+                    <button class="btn btn-primary" @onclick="BuyNowProduct">Kup teraz</button>
                 </div>
             }
         </div>
@@ -249,6 +251,22 @@
         }
     }
 
+    private async Task<string> GetUserEmailFromTokenAsync()
+    {
+        var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return string.Empty;
+        }
+
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+
+        var emailClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "email");
+        return emailClaim?.Value ?? string.Empty;
+    }
+
     private void HandleProfileClick()
     {
         if (IsLoggedIn)
@@ -346,6 +364,30 @@
         {
             CurrentPage--;
             await LoadProducts();
+        }
+    }
+
+    private async Task BuyNowProduct()
+    {
+        if (!IsLoggedIn)
+        {
+            ShowLoginModal = true;
+            return;
+        }
+
+        string userEmail = await GetUserEmailFromTokenAsync();
+        bool success = await PurchaseService.PurchaseProductAsync(SelectedProduct.Id, userEmail);
+
+        if (success)
+        {
+            await LoadProducts();
+            await JSRuntime.InvokeVoidAsync("alert", "Zakup zakończony sukcesem!");
+            await ModalDialog.Close();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Nie udało się zrealizować zakupu – być może produkt jest niedostępny.");
+            await ModalDialog.Close();
         }
     }
 }

@@ -1,7 +1,204 @@
-﻿@page "/Profile/Selling"
+﻿@page "/profile/selling"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject CartService CartService
+@using System.IdentityModel.Tokens.Jwt
+@using GAME4YOU.Entities
 
-<h3>Selling</h3>
+<link href="Profile.css" rel="stylesheet" />
+
+<div class="navbar-profile">
+    <NavLink href="/" class="logo-link" style="text-decoration: none;">
+        <span class="game-text">
+            <span class="game">GAME</span>4YOU
+        </span>
+    </NavLink>
+
+    <div class="header-menu">
+        <ul>
+            <li><NavLink href="/profile/account">Moje konto</NavLink></li>
+            <li><NavLink href="/profile/orders">Zamówienia</NavLink></li>
+            <li><NavLink href="/profile/selling">Sprzedaż</NavLink></li>
+        </ul>
+    </div>
+
+    <div class="nav-icons-profile">
+        <div class="profile-container-profile">
+            <NavLink href="/profile" class="profile-link" style="text-decoration: none; color: white;">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="icon-profile">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+            </NavLink>
+        </div>
+
+        <NavLink href="/cart" class="cart-link" style="text-decoration: none; color: white;" @onclick="HandleCartClickWeb">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="#343a40" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-cart">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218
+                      c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0
+                      .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+            </svg>
+            @if (CartItemCount > 0)
+            {
+                <span class="cart-count">@CartItemCount</span>
+            }
+        </NavLink>
+    </div>
+</div>
+
+<div class="profile-page-container">
+    <div class="form-container">
+        <h2>Dodaj ogłoszenie</h2>
+        <EditForm Model="@newProduct" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+                <div class="form-image-section">
+                    <label class="image-label">Zdjęcie</label>
+                    <div class="form-image-box">
+                        @if (string.IsNullOrEmpty(imagePreviewUrl))
+                        {
+                            <div class="form-image-placeholder">Brak zdjęcia</div>
+                        }
+                        else
+                        {
+                            <img src="@imagePreviewUrl" alt="Podgląd" />
+                        }
+                    </div>
+                    <InputFile OnChange="HandleImageUpload" />
+                </div>
+
+                <div class="form-fields">
+                    <div class="field-group">
+                        <label>Tytuł</label>
+                        <InputText class="input" @bind-Value="newProduct.Name" />
+                    </div>
+                    <div class="field-group">
+                        <label>Kategoria</label>
+                        <InputSelect class="input" @bind-Value="newProduct.CategoryId">
+                            <option value="0">-- Wybierz kategorię --</option>
+                            <option value="1">Elektronika</option>
+                            <option value="2">Moda</option>
+                            <option value="3">Dom i ogród</option>
+                        </InputSelect>
+                    </div>
+                    <div class="field-group">
+                        <label>Cena</label>
+                        <InputNumber class="input" @bind-Value="newProduct.Price" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group full-width">
+                <label>Opis</label>
+                <InputTextArea class="textarea" rows="5" @bind-Value="newProduct.Description" />
+            </div>
+
+            <div class="button-wrapper">
+                <button type="submit" class="submit-btn">Opublikuj ogłoszenie</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+<div class="footer">
+    <div class="footer-inner">
+        <div class="social-icons">
+            <a href="https://www.linkedin.com/in/dorian-sielanczyk/" target="_blank">
+                <svg id="linkedin-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 50 50">
+                    <path d="M41,4H9C6.24,4,4,6.24,4,9v32c0,2.76,2.24,5,5,5h32c2.76,0,5-2.24,5-5V9C46,6.24,43.76,4,41,4z M17,20v19h-6V20H17z M11,14.47c0-1.4,1.2-2.47,3-2.47s2.93,1.07,3,2.47c0,1.4-1.12,2.53-3,2.53C12.2,17,11,15.87,11,14.47z M39,39h-6c0,0,0-9.26,0-10 c0-2-1-4-3.5-4.04h-0.08C27,24.96,26,27.02,26,29c0,0.91,0,10,0,10h-6V20h6v2.56c0,0,1.93-2.56,5.81-2.56 c3.97,0,7.19,2.73,7.19,8.26V39z"></path>
+                </svg>
+            </a>
+            <a href="https://github.com/DorianSielanczyk" target="_blank">
+                <svg id="github-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 50 50">
+                    <path d="M17.791,46.836C18.502,46.53,19,45.823,19,45v-5.4c0-0.197,0.016-0.402,0.041-0.61C19.027,38.994,19.014,38.997,19,39 c0,0-3,0-3.6,0c-1.5,0-2.8-0.6-3.4-1.8c-0.7-1.3-1-3.5-2.8-4.7C8.9,32.3,9.1,32,9.7,32c0.6,0.1,1.9,0.9,2.7,2c0.9,1.1,1.8,2,3.4,2 c2.487,0,3.82-0.125,4.622-0.555C21.356,34.056,22.649,33,24,33v-0.025c-5.668-0.182-9.289-2.066-10.975-4.975 c-3.665,0.042-6.856,0.405-8.677,0.707c-0.058-0.327-0.108-0.656-0.151-0.987c1.797-0.296,4.843-0.647,8.345-0.714 c-0.112-0.276-0.209-0.559-0.291-0.849c-3.511-0.178-6.541-0.039-8.187,0.097c-0.02-0.332-0.047-0.663-0.051-0.999 c1.649-0.135,4.597-0.27,8.018-0.111c-0.079-0.5-0.13-1.011-0.13-1.543c0-1.7,0.6-3.5,1.7-5c-0.5-1.7-1.2-5.3,0.2-6.6 c2.7,0,4.6,1.3,5.5,2.1C21,13.4,22.9,13,25,13s4,0.4,5.6,1.1c0.9-0.8,2.8-2.1,5.5-2.1c1.5,1.4,0.7,5,0.2,6.6c1.1,1.5,1.7,3.2,1.6,5 c0,0.484-0.045,0.951-0.11,1.409c3.499-0.172,6.527-0.034,8.204,0.102c-0.002,0.337-0.033,0.666-0.051,0.999 c-1.671-0.138-4.775-0.28-8.359-0.089c-0.089,0.336-0.197,0.663-0.325,0.98c3.546,0.046,6.665,0.389,8.548,0.689 c-0.043,0.332-0.093,0.661-0.151,0.987c-1.912-0.306-5.171-0.664-8.879-0.682C35.112,30.873,31.557,32.75,26,32.969V33 c2.6,0,5,3.9,5,6.6V45c0,0.823,0.498,1.53,1.209,1.836C41.37,43.804,48,35.164,48,25C48,12.318,37.683,2,25,2S2,12.318,2,25 C2,35.164,8.63,43.804,17.791,46.836z"></path>
+                </svg>
+            </a>
+            <a href="https://www.facebook.com/dorian.sielanczyk" target="_blank">
+                <svg id="facebook-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 50 50">
+                    <path d="M25,3C12.85,3,3,12.85,3,25c0,11.03,8.125,20.137,18.712,21.728V30.831h-5.443v-5.783h5.443v-3.848 c0-6.371,3.104-9.168,8.399-9.168c2.536,0,3.877,0.188,4.512,0.274v5.048h-3.612c-2.248,0-3.033,2.131-3.033,4.533v3.161h6.588 l-0.894,5.783h-5.694v15.944C38.716,45.318,47,36.137,47,25C47,12.85,37.15,3,25,3z"></path>
+                </svg>
+            </a>
+        </div>
+        <div class="footer-content">
+            <p>&copy; 2025 GAME4YOU. All rights reserved.</p>
+        </div>
+    </div>
+</div>
 
 @code {
+    private bool _hasCheckedToken = false;
+    private int CartItemCount;
+    private bool IsLoggedIn;
+    private bool ShowLoginModal = false;
+    private string userFirstName;
+    private bool isLoaded = false;
+    private Product newProduct = new Product();
+    private IBrowserFile uploadedImage;
+    private string? imagePreviewUrl;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_hasCheckedToken)
+        {
+            _hasCheckedToken = true;
+            var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                IsLoggedIn = false;
+                Navigation.NavigateTo("/", true);
+                return;
+            }
+            IsLoggedIn = true;
+            CartItemCount = CartService.GetCartItemCount();
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var firstNameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "firstName");
+                userFirstName = firstNameClaim?.Value ?? "Użytkowniku";
+            }
+            catch
+            {
+                userFirstName = "Użytkowniku";
+            }
+            isLoaded = true;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        Console.WriteLine($"Nowy produkt: {newProduct.Name}, Cena: {newProduct.Price}");
+        Navigation.NavigateTo("/profile/selling/success");
+        await Task.CompletedTask;
+    }
+
+    private void HandleCartClickWeb()
+    {
+        if (IsLoggedIn)
+        {
+            Navigation.NavigateTo("/cart");
+        }
+        else
+        {
+            ShowLoginModal = true;
+        }
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var imageFile = e.File;
+        if (imageFile != null)
+        {
+            using var stream = imageFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // maks 10MB
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            imagePreviewUrl = $"data:{imageFile.ContentType};base64,{Convert.ToBase64String(bytes)}";
+        }
+    }
 }

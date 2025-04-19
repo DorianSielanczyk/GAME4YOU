@@ -1,10 +1,12 @@
 ﻿@page "/cart"
 @using GAME4YOU.Services
 @using GAME4YOU.Entities
+@using System.IdentityModel.Tokens.Jwt
 @inject CartService CartService
 @inject IServiceScopeFactory ScopeFactory
 @inject ProductService ProductService
 @inject CategoryService CategoryService
+@inject PurchaseService PurchaseService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
@@ -161,9 +163,7 @@
 
             <p><strong>Łączna cena:</strong> @TotalPrice.ToString("0.00") zł</p>
 
-            <button>
-                Kup
-            </button>
+            <button class="btn btn-primary" @onclick="BuyCartProducts"> Kup </button>
         </div>
     </div>
 </div>
@@ -316,6 +316,23 @@
         }
     }
 
+
+    private async Task<string> GetUserEmailFromTokenAsync()
+    {
+        var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "authToken");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return string.Empty;
+        }
+
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+
+        var emailClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "email");
+        return emailClaim?.Value ?? string.Empty;
+    }
+
     private async Task NextPage()
     {
         if (CurrentPage < TotalPages)
@@ -331,6 +348,36 @@
         {
             CurrentPage--;
             await LoadProducts();
+        }
+    }
+
+    private async Task BuyCartProducts()
+    {
+        if (!IsLoggedIn)
+        {
+            ShowLoginModal = true;
+            return;
+        }
+
+        var cartItems = CartService.GetCartItems();
+        if (!cartItems.Any())
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Koszyk jest pusty.");
+            return;
+        }
+
+        string userEmail = await GetUserEmailFromTokenAsync();
+        bool success = await PurchaseService.PurchaseCartAsync(cartItems, userEmail);
+
+        if (success)
+        {
+            CartService.ClearCart();
+            await JSRuntime.InvokeVoidAsync("alert", "Zakup zakończony sukcesem!");
+            await LoadProducts();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Nie udało się zrealizować zakupu.");
         }
     }
 }

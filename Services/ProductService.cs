@@ -15,7 +15,8 @@ namespace GAME4YOU.Services
 
         public async Task<List<Product>> GetProductsAsync()
         {
-            return await _dbContext.Products.Include(p => p.Category)
+            return await _dbContext.Products.Where(p => p.IsActive)
+                                            .Include(p => p.Category)
                                             .Include(p => p.User)
                                             .ToListAsync();
         }

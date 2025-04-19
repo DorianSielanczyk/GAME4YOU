@@ -1,5 +1,6 @@
 ﻿using GAME4YOU.Data;
 using GAME4YOU.Entities;
+using GAME4YOU.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -81,6 +82,19 @@ namespace GAME4YOU.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public async Task<bool> UpdateUser(string currentEmail, UserUpdateDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == currentEmail);
+            if (user == null)
+                return false;
+
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Email = dto.Email;
+
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GAME4YOU.Migrations
 {
     [DbContext(typeof(Game4youDbContext))]
-    [Migration("20250403121143_init")]
+    [Migration("20250416192450_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -94,6 +94,9 @@ namespace GAME4YOU.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -198,6 +201,9 @@ namespace GAME4YOU.Migrations
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Key")
                         .HasColumnType("nvarchar(max)");

@@ -92,6 +92,9 @@ namespace GAME4YOU.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
@@ -195,6 +198,9 @@ namespace GAME4YOU.Migrations
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Key")
                         .HasColumnType("nvarchar(max)");

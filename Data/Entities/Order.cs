@@ -18,5 +18,6 @@ namespace GAME4YOU.Entities
         public string Status { get; set; } = "Pending"; 
 
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public DateTime CreatedAt { get; internal set; }
     }
 }

@@ -15,8 +15,8 @@ namespace GAME4YOU.Entities
 
         public virtual Product Product { get; set; }
 
-        public int Quantity { get; set; } = 1; // Ilość kupionych sztuk
+        public int Quantity { get; set; } = 1; 
 
-        public decimal Price { get; set; } // Cena za sztukę w momencie zakupu
+        public decimal Price { get; set; } 
     }
 }

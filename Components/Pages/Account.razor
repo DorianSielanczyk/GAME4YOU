@@ -3,20 +3,20 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject CartService CartService
+@inject GAME4YOU.Services.AccountService AccountService
+@using GAME4YOU.Models;
 @using System.IdentityModel.Tokens.Jwt
 @using System.Linq
 
 <link href="Profile.css" rel="stylesheet" />
 
 <div class="navbar-profile">
-    <!-- Logo -->
     <NavLink href="/" style="text-decoration: none;">
         <span class="game-text">
             <span class="game">GAME</span>4YOU
         </span>
     </NavLink>
 
-    <!-- Menu przeniesione do headera -->
     <div class="header-menu">
         <ul>
             <li><NavLink href="/profile/account">Moje konto</NavLink></li>
@@ -25,7 +25,6 @@
         </ul>
     </div>
 
-    <!-- Ikony (profil i koszyk) -->
     <div class="nav-icons-profile">
         <div class="profile-container-profile">
             <NavLink href="/profile" style="text-decoration: none; color: white;" class="profile-link">
@@ -55,47 +54,79 @@
 
 <div class="profile-page-container">
     <div class="profile-container">
-        <h2 class="profile-title">👤 Twój profil</h2>
-
+        <h2 class="profile-title">Twój profil</h2>
         @if (isLoaded)
         {
             <ul class="profile-list">
                 <li>
                     <div class="profile-info">
-                        <div class="profile-data">
+                        <div class="profile-left">
                             <span class="icon">🧍</span>
                             <label>Imię:</label>
                             <span>@userFirstName</span>
                         </div>
+                        <div class="profile-right">
+                            @if (isEditingFirstName)
+                            {
+                                <InputText class="edit-input" @bind-Value="tempFirstName" />
+                                <button class="save-button" @onclick="SaveChanges">Zapisz</button>
+                                <button class="cancel-button" @onclick="() => isEditingFirstName = false">Anuluj</button>
+                            }
+                            else
+                            {
+                                <button class="edit-button" @onclick="() => isEditingFirstName = true">Edytuj</button>
+                            }
+                        </div>
                     </div>
-                    <button class="edit-button">Edytuj</button>
                 </li>
 
                 <li>
                     <div class="profile-info">
-                        <div class="profile-data">
+                        <div class="profile-left">
                             <span class="icon">👪</span>
                             <label>Nazwisko:</label>
                             <span>@userLastName</span>
                         </div>
+                        <div class="profile-right">
+                            @if (isEditingLastName)
+                            {
+                                <InputText class="edit-input" @bind-Value="tempLastName" />
+                                <button class="save-button" @onclick="SaveChanges">Zapisz</button>
+                                <button class="cancel-button" @onclick="() => isEditingLastName = false">Anuluj</button>
+                            }
+                            else
+                            {
+                                <button class="edit-button" @onclick="() => isEditingLastName = true">Edytuj</button>
+                            }
+                        </div>
                     </div>
-                    <button class="edit-button">Edytuj</button>
                 </li>
 
                 <li>
                     <div class="profile-info">
-                        <div class="profile-data">
+                        <div class="profile-left">
                             <span class="icon">📧</span>
                             <label>Email:</label>
                             <span>@userEmail</span>
                         </div>
+                        <div class="profile-right">
+                            @if (isEditingEmail)
+                            {
+                                <InputText class="edit-input" @bind-Value="tempEmail" />
+                                <button class="save-button" @onclick="SaveChanges">Zapisz</button>
+                                <button class="cancel-button" @onclick="() => isEditingEmail = false">Anuluj</button>
+                            }
+                            else
+                            {
+                                <button class="edit-button" @onclick="() => isEditingEmail = true">Edytuj</button>
+                            }
+                        </div>
                     </div>
-                    <button class="edit-button">Edytuj</button>
                 </li>
 
                 <li>
                     <div class="profile-info">
-                        <div class="profile-data">
+                        <div class="profile-left">
                             <span class="icon">🎖️</span>
                             <label>Rola:</label>
                             <span>@(userRole.ToLower() == "user" ? "Użytkownik" : userRole)</span>
@@ -138,11 +169,17 @@
 
 @code {
     private string userEmail, userFirstName, userLastName, userRole;
+    private string tempFirstName, tempLastName, tempEmail;
     private bool isLoaded = false;
     private bool _showPassword = false;
     private bool _hasCheckedToken = false;
     private int CartItemCount;
     private bool IsLoggedIn;
+    private bool isEditingFirstName = false;
+    private bool isEditingLastName = false;
+    private bool isEditingEmail = false;
+
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -166,10 +203,15 @@
                 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
                 var handler = new JwtSecurityTokenHandler();
                 var jwtToken = handler.ReadJwtToken(token);
+
                 userEmail = jwtToken.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
                 userFirstName = jwtToken.Claims.FirstOrDefault(c => c.Type == "firstName")?.Value;
                 userLastName = jwtToken.Claims.FirstOrDefault(c => c.Type == "lastName")?.Value;
                 userRole = jwtToken.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+                tempEmail = userEmail;
+                tempFirstName = userFirstName;
+                tempLastName = userLastName;
             }
             catch (Exception ex)
             {
@@ -185,4 +227,33 @@
     {
         _showPassword = !_showPassword;
     }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            var success = await AccountService.UpdateUser(userEmail, new GAME4YOU.Models.UserUpdateDto
+                {
+                    FirstName = tempFirstName,
+                    LastName = tempLastName,
+                    Email = tempEmail
+                });
+
+            if (!success)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Nie znaleziono użytkownika do aktualizacji");
+                return;
+            }
+
+            await JSRuntime.InvokeVoidAsync("alert", "Aby nowe dane były widoczne, zaloguj się ponowanie!");
+            isEditingFirstName = isEditingLastName = isEditingEmail = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[SaveChanges] wyjątek: {ex}");
+            await JSRuntime.InvokeVoidAsync("alert", "Coś poszło nie tak: " + ex.Message);
+        }
+    }
 }
+

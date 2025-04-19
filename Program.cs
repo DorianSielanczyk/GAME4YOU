@@ -52,7 +52,9 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ApiClientService>();
+builder.Services.AddScoped<PurchaseService>();
 builder.Services.AddSingleton<CartService>();
+builder.Services.AddScoped<OrderService>();
 builder.Services.AddAuthenticationCore();
 
 
