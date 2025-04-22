@@ -67,7 +67,8 @@ namespace GAME4YOU.Services
                 new Claim("email", user.Email),
                 new Claim("role", roleName),
                 new Claim("firstName", user.FirstName), 
-                new Claim("lastName", user.LastName)
+                new Claim("lastName", user.LastName),
+                new Claim("userId", user.Id.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));

@@ -3,8 +3,14 @@
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject CartService CartService
+@inject Game4youDbContext DbContext
+@inject ProductService ProductService
 @using System.IdentityModel.Tokens.Jwt
+@using GAME4YOU.Data
 @using GAME4YOU.Entities
+@using GAME4YOU.Services
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
 
 <link href="Profile.css" rel="stylesheet" />
 
@@ -50,7 +56,7 @@
 <div class="profile-page-container">
     <div class="form-container">
         <h2>Dodaj ogłoszenie</h2>
-        <EditForm Model="@newProduct" OnValidSubmit="HandleValidSubmit">
+        <EditForm Model="newProduct" OnValidSubmit="AddProduct">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
@@ -79,14 +85,21 @@
                         <label>Kategoria</label>
                         <InputSelect class="input" @bind-Value="newProduct.CategoryId">
                             <option value="0">-- Wybierz kategorię --</option>
-                            <option value="1">Elektronika</option>
-                            <option value="2">Moda</option>
-                            <option value="3">Dom i ogród</option>
+                            @foreach (var category in Categories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
                         </InputSelect>
                     </div>
-                    <div class="field-group">
-                        <label>Cena</label>
-                        <InputNumber class="input" @bind-Value="newProduct.Price" />
+                    <div class="field-group-row">
+                        <div class="half-field">
+                            <label>Cena</label>
+                            <InputNumber class="input no-spinner" @bind-Value="newProduct.Price" />
+                        </div>
+                        <div class="half-field">
+                            <label>Ilość</label>
+                            <InputNumber class="input no-spinner" @bind-Value="newProduct.Quantity" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -102,7 +115,6 @@
         </EditForm>
     </div>
 </div>
-
 
 <div class="footer">
     <div class="footer-inner">
@@ -135,10 +147,22 @@
     private bool IsLoggedIn;
     private bool ShowLoginModal = false;
     private string userFirstName;
+    private int userId;
     private bool isLoaded = false;
     private Product newProduct = new Product();
-    private IBrowserFile uploadedImage;
+    private string uploadedFileName;
     private string? imagePreviewUrl;
+    private IBrowserFile uploadedImage;
+    private List<Category> Categories = new();
+
+    [Inject] private IWebHostEnvironment WebHostEnvironment { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = await DbContext.Categories
+            .Where(c => c.Id != 6)
+            .ToListAsync();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -160,6 +184,11 @@
                 var jwtToken = handler.ReadJwtToken(token);
                 var firstNameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "firstName");
                 userFirstName = firstNameClaim?.Value ?? "Użytkowniku";
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId");
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int uid))
+                {
+                    userId = uid;
+                }
             }
             catch
             {
@@ -168,13 +197,6 @@
             isLoaded = true;
             StateHasChanged();
         }
-    }
-
-    private async Task HandleValidSubmit()
-    {
-        Console.WriteLine($"Nowy produkt: {newProduct.Name}, Cena: {newProduct.Price}");
-        Navigation.NavigateTo("/profile/selling/success");
-        await Task.CompletedTask;
     }
 
     private void HandleCartClickWeb()
@@ -191,14 +213,22 @@
 
     private async Task HandleImageUpload(InputFileChangeEventArgs e)
     {
-        var imageFile = e.File;
-        if (imageFile != null)
-        {
-            using var stream = imageFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // maks 10MB
-            using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream);
-            var bytes = memoryStream.ToArray();
-            imagePreviewUrl = $"data:{imageFile.ContentType};base64,{Convert.ToBase64String(bytes)}";
-        }
+        uploadedImage = e.File;
+        imagePreviewUrl = await GetImagePreviewUrl(e.File);
+    }
+
+    private async Task<string> GetImagePreviewUrl(IBrowserFile file)
+    {
+        using var stream = file.OpenReadStream(10 * 1024 * 1024);
+        using var memory = new MemoryStream();
+        await stream.CopyToAsync(memory);
+        return $"data:{file.ContentType};base64,{Convert.ToBase64String(memory.ToArray())}";
+    }
+
+    private async Task AddProduct()
+    {
+        newProduct.UserId = userId;
+        await ProductService.AddProductAsync(newProduct, uploadedImage);
+        await JSRuntime.InvokeVoidAsync("alert", "Produkt został dodany do sprzedaży!");
     }
 }

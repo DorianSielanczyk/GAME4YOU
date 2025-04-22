@@ -1,23 +1,27 @@
 ﻿using GAME4YOU.Data;
 using GAME4YOU.Entities;
+using GAME4YOU.Models;
+using GAME4YOU.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GAME4YOU.Controllers
 {
-    [Route("game4you")]
+    [Route("game4you/products")]
+    [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly Game4youDbContext _dbContext;
+        private readonly ProductService _productService;
 
-        public ProductController(Game4youDbContext dbContext)
+        public ProductController(ProductService productService)
         {
-            _dbContext = dbContext;
+            _productService = productService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> GetAll()
+        public async Task<ActionResult<IEnumerable<Product>>> GetAll()
         {
-            var products = _dbContext.Products.ToList();
+            var products = await _productService.GetProductsAsync();
             return Ok(products);
         }
     }

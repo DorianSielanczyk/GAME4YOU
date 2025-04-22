@@ -531,6 +531,7 @@ h2 {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    width: 420px;
 }
 
 .field-group {
@@ -539,10 +540,33 @@ h2 {
     gap: 6px;
 }
 
-    .field-group label {
-        font-weight: 600;
-        color: #555;
-    }
+.field-group-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.half-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+}
+
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.no-spinner {
+    -moz-appearance: textfield;
+}
+
+.field-group label {
+    font-weight: 600;
+    color: #555;
+}
 
 .input, select {
     padding: 10px;
