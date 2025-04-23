@@ -74,6 +74,10 @@
                         }
                     </div>
                     <InputFile OnChange="HandleImageUpload" />
+                    @if (imageError)
+                    {
+                        <div class="text-danger">Zdjęcie jest wymagane.</div>
+                    }
                 </div>
 
                 <div class="form-fields">
@@ -152,6 +156,7 @@
     private Product newProduct = new Product();
     private string uploadedFileName;
     private string? imagePreviewUrl;
+    private bool imageError = false;
     private IBrowserFile uploadedImage;
     private List<Category> Categories = new();
 
@@ -215,6 +220,7 @@
     {
         uploadedImage = e.File;
         imagePreviewUrl = await GetImagePreviewUrl(e.File);
+        imageError = false;
     }
 
     private async Task<string> GetImagePreviewUrl(IBrowserFile file)
@@ -227,8 +233,22 @@
 
     private async Task AddProduct()
     {
-        newProduct.UserId = userId;
-        await ProductService.AddProductAsync(newProduct, uploadedImage);
-        await JSRuntime.InvokeVoidAsync("alert", "Produkt został dodany do sprzedaży!");
+        if (string.IsNullOrEmpty(imagePreviewUrl)) 
+        {
+            imageError = true;  
+            return;
+        }
+
+        try
+        {
+            newProduct.UserId = userId;
+            await ProductService.AddProductAsync(newProduct, uploadedImage);
+            await JSRuntime.InvokeVoidAsync("alert", "Produkt został dodany do sprzedaży!");
+            await JSRuntime.InvokeVoidAsync("location.reload");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Błąd: {ex.Message}");
+        }
     }
 }

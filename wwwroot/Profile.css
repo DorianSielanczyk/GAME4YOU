@@ -450,6 +450,14 @@ main {
     margin-top: 40px;
 }
 
+.no-orders {
+    display: flex;
+    justify-content: center;
+    margin-bottom: auto;
+    font-size: 1.2rem;
+    color: #666;
+}
+
 .card-button {
     display: inline-block;
     background-color: #9503d3;
@@ -472,8 +480,8 @@ main {
     margin: 40px auto;
     padding: 20px;
     background: white;
-    border-radius: 16px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     flex: 1;
 }
 

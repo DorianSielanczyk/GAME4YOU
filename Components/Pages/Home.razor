@@ -211,6 +211,10 @@
                 allProducts = await productService.GetProductsByCategoryAsync(SelectedCategoryId);
             }
 
+            allProducts = allProducts
+         .Where(p => p.Quantity > 0 && p.IsActive)
+         .ToList();
+
             if (!string.IsNullOrEmpty(SearchQuery))
             {
                 allProducts = allProducts
@@ -218,14 +222,12 @@
                     .ToList();
             }
 
+            TotalProductCount = allProducts.Count;
             Products = allProducts
                 .Skip((CurrentPage - 1) * ItemsPerPage)
                 .Take(ItemsPerPage)
                 .ToList();
-
-            TotalProductCount = allProducts.Count;
         }
-
         await InvokeAsync(StateHasChanged);
     }
 

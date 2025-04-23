@@ -441,7 +441,8 @@
     font-size: 1.4em;
     color: #007bff;
     font-weight: bold;
-    margin-left: 12px;
+    margin-left: 1.5%;
+    width: auto;
 }
 
 .remove-cart-icon {

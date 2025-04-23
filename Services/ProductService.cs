@@ -32,22 +32,23 @@ namespace GAME4YOU.Services
 
         public async Task AddProductAsync(Product product, IBrowserFile imageFile)
         {
-            if (imageFile != null)
+            if (imageFile == null)
             {
-                var originalName = Path.GetFileNameWithoutExtension(imageFile.Name);
-                var extension = Path.GetExtension(imageFile.Name);
-                var uniqueSuffix = Guid.NewGuid().ToString().Substring(0, 8);
-                var fileName = $"{originalName}_{uniqueSuffix}{extension}";
-
-                var savePath = Path.Combine(_env.WebRootPath, "images", fileName);
-
-                await using var stream = imageFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-                await using var fileStream = File.Create(savePath);
-                await stream.CopyToAsync(fileStream);
-
-                product.ImagePath = $"Images/{fileName}";
+                throw new ArgumentException("Zdjęcie produktu jest wymagane.");
             }
 
+            var originalName = Path.GetFileNameWithoutExtension(imageFile.Name);
+            var extension = Path.GetExtension(imageFile.Name);
+            var uniqueSuffix = Guid.NewGuid().ToString().Substring(0, 8);
+            var fileName = $"{originalName}_{uniqueSuffix}{extension}";
+
+            var savePath = Path.Combine(_env.WebRootPath, "images", fileName);
+
+            await using var stream = imageFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            await using var fileStream = File.Create(savePath);
+            await stream.CopyToAsync(fileStream);
+
+            product.ImagePath = $"Images/{fileName}";
             product.CreatedAt = DateTime.UtcNow;
             product.IsActive = true;
 

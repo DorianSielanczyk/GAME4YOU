@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GAME4YOU.Migrations
 {
     [DbContext(typeof(Game4youDbContext))]
-    [Migration("20250416192450_init")]
+    [Migration("20250423171354_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -210,7 +210,8 @@ namespace GAME4YOU.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<float>("Price")
                         .HasColumnType("real");
