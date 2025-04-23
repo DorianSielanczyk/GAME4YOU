@@ -378,6 +378,38 @@
         else
         {
             await JSRuntime.InvokeVoidAsync("alert", "Nie udało się zrealizować zakupu, prawdopodobnie ilość sztuk produktu się zmniejszyła.");
+            await RefreshCartQuantities();
+            await LoadProducts();
         }
+    }
+
+    private async Task RefreshCartQuantities()
+    {
+        var allItems = CartService.GetCartItems().ToList();
+
+        foreach (var item in allItems)
+        {
+            var dbProduct = await ProductService.GetProductByIdAsync(item.Product.Id);
+            if (dbProduct == null)
+            {
+                CartService.RemoveFromCart(item.Product);
+                continue;
+            }
+
+            if (dbProduct.Quantity <= 0)
+            {
+                CartService.RemoveFromCart(item.Product);
+                continue;
+            }
+
+            if (item.Quantity > dbProduct.Quantity)
+            {
+                item.Quantity = dbProduct.Quantity;
+                CartService.UpdateQuantity(item.Product, dbProduct.Quantity);
+            }
+
+            item.Product.Quantity = dbProduct.Quantity;
+        }
+        CartItemCount = CartService.GetCartItemCount();
     }
 }

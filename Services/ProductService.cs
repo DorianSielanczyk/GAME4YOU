@@ -30,6 +30,13 @@ namespace GAME4YOU.Services
                                             .ToListAsync();
         }
 
+        public async Task<Product?> GetProductByIdAsync(int productId)
+        {
+            return await _dbContext.Products
+                .FirstOrDefaultAsync(p => p.Id == productId);
+        }
+
+
         public async Task AddProductAsync(Product product, IBrowserFile imageFile)
         {
             if (imageFile == null)

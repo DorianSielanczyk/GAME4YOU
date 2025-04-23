@@ -478,8 +478,7 @@ main {
 .form-container {
     width: 100%;
     max-width: 750px;
-    height: auto; 
-    max-height: 850px;
+    height: 650px; 
     margin: 35px auto;
     padding: 20px;
     background: white;
@@ -487,6 +486,7 @@ main {
     border: solid 0.5px black;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     flex: 1;
+    overflow-y:auto;
 }
 
 
