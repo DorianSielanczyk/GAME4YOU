@@ -77,6 +77,7 @@
                 }
             </div>
         </div>
+
         <NavLink href="#" class="cart-link" style="text-decoration: none; color: white;" @onclick="HandleCartClickWeb">
             <svg xmlns="http://www.w3.org/2000/svg" fill="#343a40" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-cart">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -186,7 +187,6 @@
     private int ItemsPerPage = 15;
     private int TotalProductCount;
     private int TotalPages => (int)Math.Ceiling((double)TotalProductCount / ItemsPerPage);
-
 
     private void Open(Product product)
     {
