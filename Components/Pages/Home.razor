@@ -383,7 +383,7 @@
         if (success)
         {
             await LoadProducts();
-            await JSRuntime.InvokeVoidAsync("alert", "Zakup zakończony sukcesem!");
+            await JSRuntime.InvokeVoidAsync("alert", "Zakup zakończony sukcesem! \nProdukt pojawi się w sekcji zamówienia na profilu użytkownika");
             await ModalDialog.Close();
         }
         else
